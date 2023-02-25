@@ -34,3 +34,5 @@ class AdminModel(db):
             email=self.email,
             password=self.password
         )
+
+# print('Hello World!!!')
