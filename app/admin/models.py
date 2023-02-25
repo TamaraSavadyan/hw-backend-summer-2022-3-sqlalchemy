@@ -35,4 +35,3 @@ class AdminModel(db):
             password=self.password
         )
 
-# print('Hello World!!!')

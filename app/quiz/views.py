@@ -1,5 +1,5 @@
 from aiohttp_apispec import querystring_schema, request_schema, response_schema, docs
-from aiohttp.web_exceptions import HTTPConflict, HTTPNotFound
+from aiohttp.web_exceptions import HTTPConflict, HTTPNotFound, HTTPBadRequest
 
 from app.quiz.schemes import (
     ListQuestionSchema,
@@ -39,6 +39,22 @@ class QuestionAddView(AuthRequiredMixin, View):
     @response_schema(QuestionSchema)
     async def post(self):
         data = self.request["data"]
+        data1 = await self.request.json()
+        answers = data1['answers']
+
+        flag = 0
+        for answer in answers:
+            if answer['is_correct'] == True:
+                flag += 1
+            if flag > 1:
+                raise HTTPBadRequest
+            
+        if flag == 0:
+                raise HTTPBadRequest    
+            
+        if len(answers) == 1:
+            raise HTTPBadRequest
+        
         if await self.store.quizzes.get_question_by_title(data["title"]):
             raise HTTPConflict
         if not await self.store.quizzes.get_theme_by_id(int(data["theme_id"])):
